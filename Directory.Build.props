@@ -1,0 +1,8 @@
+<Project>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <!-- Set additional settings to include OpenSteamworks directory from the correct path from SolutionDir -->
+      <AdditionalIncludeDirectories>$(SolutionDir)\open-steamworks\OpenSteamworks\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>
