@@ -134,6 +134,9 @@ class Program
                     {
                         var message = slashCommand.Data.Options.FirstOrDefault(x => x.Name == "message")?.Value?.ToString();
 
+                        // コマンド送信者のVCを取得
+                        var inviterVcId = (slashCommand.User as SocketGuildUser)?.VoiceChannel?.Id ?? 0;
+
                         await interaction.RespondAsync(
                             text: message,
                             embed: new EmbedBuilder()
@@ -156,7 +159,7 @@ class Program
                                 .WithImageUrl(headerImage)
                                 .Build(),
                             components: new ComponentBuilder()
-                                .WithButton("招待リンク取得", "create_steam_invite", ButtonStyle.Success, new Emoji("🔗"))
+                                .WithButton("招待リンク取得", $"create_steam_invite_{inviterVcId}", ButtonStyle.Success, new Emoji("🔗"))
                                 .Build()
                         );
                     }
@@ -164,8 +167,29 @@ class Program
 
                 if (interaction is SocketMessageComponent messageComponent)
                 {
-                    if (messageComponent.Data.CustomId == "create_steam_invite")
+                    if (messageComponent.Data.CustomId.StartsWith("create_steam_invite_"))
                     {
+                        // 考え中
+                        await messageComponent.DeferAsync(ephemeral: true);
+
+
+                        // IDを取得
+                        var inviterVcId = ulong.Parse(messageComponent.Data.CustomId.Split('_').Last());
+
+                        // 押した人がVCに入っているか確認
+                        var inviteeVcId = (messageComponent.User as SocketGuildUser)?.VoiceChannel?.Id ?? 0;
+                        if (inviterVcId != inviteeVcId)
+                        {
+                            var link = $"https://discord.com/channels/{guildId}/{inviterVcId}";
+                            await messageComponent.FollowupAsync(
+                                text: $"VC ({link}) に入ってからボタンを押してください",
+                                ephemeral: true
+                            );
+                            return;
+                        }
+
+
+                        // 招待を作成
                         onInviteCreated = async (connectURL) =>
                         {
                             await messageComponent.FollowupAsync(
@@ -174,7 +198,6 @@ class Program
                             );
                         };
                         NativeMethods.SteamStuff_SendInvite(0, gameId.m_GameID);
-                        await messageComponent.DeferAsync(ephemeral: true);
                     }
                 }
             };
