@@ -14,6 +14,13 @@ namespace DiscordSteamRemoteplayAutohost;
 
 class Program
 {
+    private static Action<string>? onInviteCreated = null;
+    private static readonly NativeMethods.OnInviteCreated onInviteCreatedDelegate = (invitee, connectURL) =>
+    {
+        onInviteCreated?.Invoke(connectURL);
+        onInviteCreated = null;
+    };
+
     public static async Task Main()
     {
         try
@@ -90,17 +97,7 @@ class Program
 
 
             // コールバックの設定
-            Action<string>? onInviteCreated = null;
-            NativeMethods.SteamStuff_SetOnInviteCreated((invitee, connectURL) =>
-            {
-                Console.WriteLine($"招待リンクが作成されました: {connectURL}");
-                onInviteCreated?.Invoke(connectURL);
-                onInviteCreated = null;
-            });
-            NativeMethods.SteamStuff_SetOnSessionClosed(() =>
-            {
-                Console.WriteLine("セッションが終了しました");
-            });
+            NativeMethods.SteamStuff_SetOnInviteCreated(onInviteCreatedDelegate);
 
 
             // DiscordのBotの初期化
@@ -171,7 +168,7 @@ class Program
                     if (messageComponent.Data.CustomId.StartsWith("create_steam_invite_"))
                     {
                         // 考え中
-                        await messageComponent.DeferAsync(ephemeral: true);
+                        await messageComponent.DeferLoadingAsync(ephemeral: true);
 
 
                         // IDを取得
@@ -193,6 +190,8 @@ class Program
                         // 招待を作成
                         onInviteCreated = async (connectURL) =>
                         {
+                            Console.WriteLine($"招待リンクが作成されました: {connectURL} (by {messageComponent.User.Username})");
+
                             await messageComponent.FollowupAsync(
                                 text: $"招待リンクを作成しました！\n{connectURL}\nリンクを踏んでゲームに参加してください～",
                                 ephemeral: true
