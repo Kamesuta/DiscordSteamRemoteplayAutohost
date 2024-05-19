@@ -10,6 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Net" Version="3.15.0" />
+    <PackageReference Include="YamlDotNet" Version="15.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\open-steamworks\OpenSteamAPI\src\OpenSteamAPI.vcxproj">
       <Private>True</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

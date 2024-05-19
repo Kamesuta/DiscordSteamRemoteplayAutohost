@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiscordSteamRemoteplayAutohost
+namespace DiscordSteamRemoteplayAutohost.Steam
 {
-    [System.Serializable]
+    [Serializable]
     public struct CGameID
     {
         public ulong m_GameID;
@@ -40,9 +40,9 @@ namespace DiscordSteamRemoteplayAutohost
 
         public readonly uint AppID => (uint)(m_GameID & 0xFFFFFFul);
 
-        public readonly EGameIDType Type => (EGameIDType)((m_GameID >> 24) & 0xFFul);
+        public readonly EGameIDType Type => (EGameIDType)(m_GameID >> 24 & 0xFFul);
 
-        public readonly uint ModID => (uint)((m_GameID >> 32) & 0xFFFFFFFFul);
+        public readonly uint ModID => (uint)(m_GameID >> 32 & 0xFFFFFFFFul);
 
         public readonly bool IsValid
         {
@@ -63,17 +63,17 @@ namespace DiscordSteamRemoteplayAutohost
         #region Private Setters for internal use
         private void SetAppID(uint other)
         {
-            m_GameID = (m_GameID & ~(0xFFFFFFul << (ushort)0)) | (((ulong)(other) & 0xFFFFFFul) << (ushort)0);
+            m_GameID = m_GameID & ~(0xFFFFFFul << 0) | (other & 0xFFFFFFul) << 0;
         }
 
         private void SetType(EGameIDType other)
         {
-            m_GameID = (m_GameID & ~(0xFFul << (ushort)24)) | (((ulong)(other) & 0xFFul) << (ushort)24);
+            m_GameID = m_GameID & ~(0xFFul << 24) | ((ulong)other & 0xFFul) << 24;
         }
 
         private void SetModID(uint other)
         {
-            m_GameID = (m_GameID & ~(0xFFFFFFFFul << (ushort)32)) | (((ulong)(other) & 0xFFFFFFFFul) << (ushort)32);
+            m_GameID = m_GameID & ~(0xFFFFFFFFul << 32) | (other & 0xFFFFFFFFul) << 32;
         }
         #endregion
     }

@@ -33,6 +33,8 @@ int main()
 			std::cout << "Session closed" << std::endl;
 		});
 
+	SteamStuff_SendInvite(0, gameId.ToUint64());
+
 	while (true)
 	{
 		SteamStuff_RunCallbacks();
