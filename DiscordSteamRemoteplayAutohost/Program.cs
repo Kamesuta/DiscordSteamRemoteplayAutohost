@@ -117,7 +117,7 @@ class Program
                 // コマンドの登録
                 var guild = client.GetGuild(guildId);
                 await guild.CreateApplicationCommandAsync(new SlashCommandBuilder()
-                    .WithName("invite")
+                    .WithName("steam_invite")
                     .WithDescription("Steam Remote Play Together を使用して起動中のゲームに招待します")
                     .AddOption(new SlashCommandOptionBuilder()
                         .WithName("message")
@@ -130,7 +130,7 @@ class Program
             {
                 if (interaction is SocketSlashCommand slashCommand)
                 {
-                    if (slashCommand.Data.Name == "invite")
+                    if (slashCommand.Data.Name == "steam_invite")
                     {
                         var message = slashCommand.Data.Options.FirstOrDefault(x => x.Name == "message")?.Value?.ToString();
 
@@ -157,6 +157,7 @@ class Program
                                     "  x360ceがうまくいかない場合は、スマホでプレイできるので、そっちをお試しください\n" +
                                     "4. ページ内の「ゲームに参加」ボタンを押して、Steam Linkアプリを開きます")
                                 .WithImageUrl(headerImage)
+                                .WithColor(Color.DarkBlue)
                                 .Build(),
                             components: new ComponentBuilder()
                                 .WithButton("招待リンク取得", $"create_steam_invite_{inviterVcId}", ButtonStyle.Success, new Emoji("🔗"))
