@@ -2,7 +2,11 @@
 #define STEAMSTUFF_H
 
 // Define DllExport to export functions from the DLL.
-#define DllExport extern "C" __declspec(dllexport)
+#ifdef DLL_EXPORT
+    #define DllExport extern "C" __declspec(dllexport)
+#else
+    #define DllExport extern "C" __declspec(dllimport)
+#endif
 
 #include <Steamworks.h>
 
@@ -10,11 +14,10 @@ class ClientContext
 {
 public:
     ClientContext();
-    ~ClientContext();
+    virtual ~ClientContext();
 
     ISteamUser019* SteamUser();
     ISteamFriends015* SteamFriends();
-    ISteamUtils009* SteamUtils();
 
     /**
         @brief Get the Remote Client Manager interface.
@@ -38,6 +41,7 @@ public:
 
     /**
         @brief Get the game ID of the running game.
+        @return The game ID of the running game.
     */
     CGameID GetRunningGameID();
 
@@ -48,7 +52,6 @@ private:
     ISteamClient019* m_pSteamClient;
     ISteamUser019* m_pSteamUser;
     ISteamFriends015* m_pSteamFriends;
-    ISteamUtils009* m_pSteamUtils;
 
     IClientEngine* m_pClientEngine;
     IClientRemoteClientManager* m_pClientRemoteManager;
